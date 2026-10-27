@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>真心話大貓熊 使用說明</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面：說明網站三欄 —— 左邊頁面選單、中間一頁內容、右邊「本頁內容」；窄螢幕收成一欄＋選單按鈕 */
+:root {
+  --bg: #fbf8fa;
+  --surface: #ffffff;
+  --sunken: #f4eef2;
+  --fg: #2a2230;
+  --muted: #6f6475;
+  --line: #ebe1e8;
+  --accent: #c2366f;       /* 文字與連結用，白底上夠深 */
+  --brand: #f8b9d4;        /* bot 面板 embed 的粉色 */
+  --brand-ink: #4a1d33;
+  --tip-bg: #fdf1f6;
+  --warn-bg: #fff6e6;
+  --warn-line: #e3a33b;
+  --font-display: "Huninn", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, "Noto Sans TC", monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16131a; --surface: #1e1a23; --sunken: #26212c; --fg: #ece6ef; --muted: #a79dad; --line: #2f2936;
+    --accent: #f8b9d4; --brand: #f8b9d4; --brand-ink: #2b1320; --tip-bg: #2a1e27; --warn-bg: #2b2418; --warn-line: #d9a148;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16131a; --surface: #1e1a23; --sunken: #26212c; --fg: #ece6ef; --muted: #a79dad; --line: #2f2936;
+  --accent: #f8b9d4; --brand: #f8b9d4; --brand-ink: #2b1320; --tip-bg: #2a1e27; --warn-bg: #2b2418; --warn-line: #d9a148;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 72px; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15.5px; line-height: 1.75;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* 頂欄 */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.top-in { display: flex; align-items: center; gap: 16px; height: 56px; max-width: 1280px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 18px; color: var(--fg); white-space: nowrap; }
+.logo:hover { text-decoration: none; }
+.logo-mark { width: 30px; height: 30px; border-radius: 50%; background: var(--brand); display: grid; place-items: center; flex: none; }
+.logo small { font-family: var(--font-body); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.search { margin-left: auto; position: relative; width: min(280px, 100%); }
+.search input {
+  width: 100%; height: 36px; padding: 0 12px 0 34px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--sunken); color: var(--fg); font: inherit; font-size: 14px;
+}
+.search svg { position: absolute; left: 10px; top: 10px; color: var(--muted); }
+.menu-btn { display: none; height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 14px; cursor: pointer; }
+
+/* 三欄 */
+.shell {
+  display: grid; grid-template-columns: 236px minmax(0, 1fr) 200px; gap: 40px;
+  max-width: 1280px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.side { position: sticky; top: calc(56px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 56px); overflow-y: auto; padding-block: 24px; }
+.side h4 { margin: 18px 0 6px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .08em; }
+.side h4:first-child { margin-top: 0; }
+.side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.side a { display: block; padding: 6px 10px; border-radius: 7px; color: var(--fg); font-size: 14.5px; }
+.side a:hover { background: var(--sunken); text-decoration: none; }
+.side a[aria-current="page"] { background: var(--tip-bg); color: var(--accent); font-weight: 700; }
+.side .empty { color: var(--muted); font-size: 13px; padding: 6px 10px; }
+
+main { min-width: 0; padding-block: 32px 64px; }
+article { max-width: 720px; }
+.crumb { font-size: 13px; color: var(--muted); letter-spacing: .04em; margin: 0 0 4px; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
+.lead { font-size: 17px; color: var(--muted); margin: 0 0 28px; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: 23px; margin: 40px 0 12px; padding-top: 8px; text-wrap: balance; }
+h3 { font-size: 16.5px; margin: 24px 0 8px; }
+p { margin: 0 0 14px; }
+ul.list, ol.list { margin: 0 0 16px; padding-left: 1.3em; display: grid; gap: 6px; }
+code, kbd {
+  font-family: var(--font-mono); font-size: .9em; background: var(--sunken); border: 1px solid var(--line);
+  border-radius: 6px; padding: 1px 6px; white-space: nowrap;
+}
+.btnlike { display: inline-block; font-size: .88em; padding: 0 9px; border-radius: 6px; background: var(--sunken); border: 1px solid var(--line); font-weight: 500; white-space: nowrap; }
+.btnlike.blue { background: #5865f2; border-color: #5865f2; color: #fff; }
+.btnlike.green { background: #248046; border-color: #248046; color: #fff; }
+.btnlike.red { background: #da373c; border-color: #da373c; color: #fff; }
+
+/* 步驟 */
+.steps { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; }
+.steps li::before {
+  content: counter(s); width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: var(--brand-ink);
+  display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-top: 1px;
+}
+.steps b { display: block; }
+
+/* 提示框 */
+.callout { border-radius: var(--radius); padding: 12px 16px; margin: 0 0 18px; background: var(--tip-bg); border: 1px solid var(--line); }
+.callout.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+.callout-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.callout p:last-child { margin: 0; }
+
+/* 圖片 */
+figure { margin: 0 0 20px; }
+figure img { display: block; max-width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); background: #313338; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+/* 說明清單：名稱＋一句說明 */
+dl.parts { margin: 0 0 18px; display: grid; gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+dl.parts div { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+dl.parts div:first-child { border-top: 0; }
+dl.parts dt { font-weight: 700; }
+dl.parts dd { margin: 0; color: var(--fg); }
+
+/* 表格 */
+.table-wrap { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--surface); }
+th, td { text-align: left; padding: 9px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+thead th { border-top: 0; background: var(--sunken); font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+td:first-child { white-space: nowrap; }
+
+/* 動畫牆 */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 0 0 20px; }
+.gallery figure { margin: 0; }
+.gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; }
+.gallery figcaption { font-size: 14px; color: var(--fg); font-weight: 500; text-align: center; }
+
+/* 常見問題 */
+details { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); margin: 0 0 10px; }
+summary { cursor: pointer; padding: 12px 16px; font-weight: 700; list-style: none; display: flex; gap: 10px; align-items: center; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; font-size: 18px; }
+details[open] summary::after { content: "−"; }
+details > div { padding: 0 16px 14px; }
+details > div p:last-child { margin: 0; }
+
+/* 上一頁／下一頁 */
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 48px; }
+.pager a { display: block; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; background: var(--surface); color: var(--fg); }
+.pager a:hover { border-color: var(--accent); text-decoration: none; }
+.pager small { display: block; color: var(--muted); font-size: 12.5px; }
+.pager .next { text-align: right; grid-column: 2; }
+
+/* 本頁內容 */
+.toc { position: sticky; top: calc(56px + env(safe-area-inset-top, 0px)); align-self: start; padding-block: 32px; font-size: 13.5px; }
+.toc h4 { margin: 0 0 8px; font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+.toc ul { list-style: none; margin: 0; padding: 0 0 0 10px; border-left: 1px solid var(--line); display: grid; gap: 6px; }
+.toc a { color: var(--muted); }
+.toc a:hover { color: var(--accent); text-decoration: none; }
+
+section[data-page] { display: none; }
+section[data-page].on { display: block; }
+
+@media (max-width: 1100px) {
+  .shell { grid-template-columns: 220px minmax(0, 1fr); }
+  .toc { display: none; }
+}
+@media (max-width: 760px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .menu-btn { display: inline-block; }
+  .side { display: none; position: static; max-height: none; padding-block: 12px 4px; border-bottom: 1px solid var(--line); }
+  .side.open { display: block; }
+  .logo small { display: none; }
+  .search { width: auto; flex: 1; }
+  h1 { font-size: 28px; }
+  dl.parts div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  section[data-page].on { animation: fade .18s ease-out; }
+  @keyframes fade { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#start">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#4a1d33" stroke-width="2"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" stroke="#4a1d33" stroke-width="1.4"/><circle cx="12" cy="12" r="2.6" fill="#4a1d33"/></svg>
+      </span>
+      真心話大貓熊 <small>使用說明</small>
+    </a>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="side">選單</button>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="搜尋說明…" aria-label="搜尋說明" autocomplete="off">
+    </label>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" id="side" aria-label="說明頁面">
+    <h4>開始</h4>
+    <ul>
+      <li><a href="#start">快速開始</a></li>
+      <li><a href="#commands">指令一覽</a></li>
+    </ul>
+    <h4>玩遊戲</h4>
+    <ul>
+      <li><a href="#panel">遊戲面板</a></li>
+      <li><a href="#reveal">揭曉題目</a></li>
+      <li><a href="#voice">朗讀</a></li>
+      <li><a href="#anims">抽選動畫</a></li>
+    </ul>
+    <h4>題目</h4>
+    <ul>
+      <li><a href="#bank">題庫與投稿</a></li>
+    </ul>
+    <h4>管理</h4>
+    <ul>
+      <li><a href="#server">伺服器設定</a></li>
+      <li><a href="#perms">權限</a></li>
+    </ul>
+    <h4>其他</h4>
+    <ul>
+      <li><a href="#faq">常見問題</a></li>
+    </ul>
+    <p class="empty" id="no-hit" hidden>找不到相關頁面</p>
+  </nav>
+
+  <main>
+    <article>
+
+<!-- ───────── 快速開始 ───────── -->
+<section data-page="start">
+  <p class="crumb">開始</p>
+  <h1>快速開始</h1>
+  <p class="lead">在 Discord 頻道裡轉輪盤抽人，被抽到的人回答真心話或做大冒險。內建 4700 多題、24 種抽選動畫，也能讓 bot 在語音裡唸題目。</p>
+
+  <figure>
+    <img src="img/wheel_5.gif" alt="轉盤動畫：五個人的名字在轉盤上，最後停在其中一人" width="400" height="460" loading="lazy">
+    <figcaption>每一輪都會播一段抽人動畫（這是「轉盤」）</figcaption>
+  </figure>
+
+  <h2 id="start-steps">三步開始玩</h2>
+  <ol class="steps">
+    <li><div><b>開局</b>在想玩的文字頻道輸入 <code>/真心話大冒險 01_開局</code></div></li>
+    <li><div><b>拉人</b>大家按面板上的 <span class="btnlike green">加入</span>，或由開局者在成員選單直接勾人</div></li>
+    <li><div><b>開轉</b>按 <span class="btnlike blue">轉</span>，看動畫抽到誰，題目會直接 @ 他</div></li>
+  </ol>
+  <p>答完之後按 <span class="btnlike blue">再轉一次</span> 換下一個人。玩夠了按 <span class="btnlike red">結束</span>。</p>
+
+  <div class="callout">
+    <div class="callout-title">提示</div>
+    <p>一個頻道同時只能有一局。想在別的頻道同時玩，到那個頻道再開一局就好。</p>
+  </div>
+
+  <h2 id="start-next">接下來看什麼</h2>
+  <ul class="list">
+    <li>面板上每個選單、按鈕是什麼 → <a href="#panel">遊戲面板</a></li>
+    <li>想自己出題 → <a href="#bank">題庫與投稿</a></li>
+    <li>管理員要調整伺服器預設值 → <a href="#server">伺服器設定</a></li>
+  </ul>
+</section>
+
+<!-- ───────── 指令一覽 ───────── -->
+<section data-page="commands">
+  <p class="crumb">開始</p>
+  <h1>指令一覽</h1>
+  <p class="lead">所有指令都在 <code>/真心話大冒險</code> 底下，只能在伺服器裡用。名稱前面的編號是為了讓 Discord 照順序排。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>做什麼</th><th>誰能用</th></tr></thead>
+      <tbody>
+        <tr><td><code>01_開局</code></td><td>在這個頻道開一局，可以順便選題型</td><td>所有人</td></tr>
+        <tr><td><code>02_加人</code></td><td>用 @ 把人加進這局，一次最多 5 人</td><td>開局者、管理員</td></tr>
+        <tr><td><code>03_退出</code></td><td>自己退出；填成員就是請那個人退出</td><td>自己：所有人<br>別人：開局者、管理員</td></tr>
+        <tr><td><code>04_結束</code></td><td>結束這個頻道的局</td><td>開局者、管理員</td></tr>
+        <tr><td><code>05_朗讀</code></td><td>叫 bot 進語音唸題目，或請它離開</td><td>參加者、開局者、管理員</td></tr>
+        <tr><td><code>06_題庫</code></td><td>看題、投稿、搜尋、刪題</td><td>所有人</td></tr>
+        <tr><td><code>07_設定</code></td><td>伺服器預設值與管理身分組</td><td>管理員</td></tr>
+        <tr><td><code>08_說明</code></td><td>遊玩方式和這份說明的連結</td><td>所有人</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <div class="callout-title">提示</div>
+    <p>大部分事情直接按面板上的按鈕就好，不用記指令。</p>
+  </div>
+</section>
+
+<!-- ───────── 遊戲面板 ───────── -->
+<section data-page="panel">
+  <p class="crumb">玩遊戲</p>
+  <h1>遊戲面板</h1>
+  <p class="lead">開局後頻道裡會出現這個面板，一局的設定都在這裡。</p>
+
+  <figure>
+    <img src="img/shot_panel.png" alt="遊戲面板截圖：上面是開局者、題型、抽選動畫、真心話分級、題庫，接著是參加者名單，下面四個選單與五個按鈕" width="656" height="783" loading="lazy">
+  </figure>
+
+  <h2 id="panel-status">上半部：這局的狀態</h2>
+  <dl class="parts">
+    <div><dt>題型、抽選動畫、真心話分級</dt><dd>這局現在的設定</dd></div>
+    <div><dt>題庫</dt><dd>每種題目還有幾題可以抽</dd></div>
+    <div><dt>參加者</dt><dd>目前名單，最多 25 人</dd></div>
+    <div><dt>左邊的色條</dt><dd>粉色＝可以轉了；灰色＝還沒人或沒有題目</dd></div>
+  </dl>
+
+  <h2 id="panel-menus">四個選單</h2>
+  <p>只有開局者和管理員能改，別人改了會自動還原。</p>
+  <dl class="parts">
+    <div><dt>成員</dt><dd>直接把大家勾進來。選單只列一部分人，打字可以搜尋名字</dd></div>
+    <div><dt>題型</dt><dd>只有真心話／只有大冒險／兩種隨機／抽到的人自己選</dd></div>
+    <div><dt>真心話分級</dt><dd>普通、曖昧、18+，可以多選</dd></div>
+    <div><dt>抽選動畫</dt><dd>勾幾種輪流出現，或選「每次隨機」</dd></div>
+  </dl>
+
+  <h2 id="panel-buttons">五個按鈕</h2>
+  <dl class="parts">
+    <div><dt><span class="btnlike blue">轉</span></dt><dd>開始這一輪（參加者都能按）</dd></div>
+    <div><dt><span class="btnlike green">加入</span></dt><dd>把自己加進名單</dd></div>
+    <div><dt><span class="btnlike">退出</span></dt><dd>把自己移出名單</dd></div>
+    <div><dt><span class="btnlike red">結束</span></dt><dd>結束這局（開局者、管理員）</dd></div>
+    <div><dt><span class="btnlike">朗讀</span></dt><dd>叫 bot 進語音唸題目，見 <a href="#voice">朗讀</a></dd></div>
+  </dl>
+
+  <h2 id="panel-rules">遊玩方式</h2>
+  <p>面板下面會再發一則遊玩方式，給第一次玩的人看。裡面的「預設」是這個伺服器的預設值。</p>
+  <figure>
+    <img src="img/shot_rules.png" alt="遊玩方式訊息截圖：六個步驟與一行備註" width="762" height="365" loading="lazy">
+  </figure>
+</section>
+
+<!-- ───────── 揭曉題目 ───────── -->
+<section data-page="reveal">
+  <p class="crumb">玩遊戲</p>
+  <h1>揭曉題目</h1>
+  <p class="lead">動畫播完，bot 會發一則新訊息 @ 被抽到的人，附上題目。</p>
+
+  <figure>
+    <img src="img/shot_reveal.png" alt="揭曉訊息截圖：@玩家、真心話（普通）、題目、第 1 輪・題目 #D840，下面三個按鈕" width="508" height="290" loading="lazy">
+  </figure>
+
+  <h2 id="reveal-buttons">訊息上的按鈕</h2>
+  <dl class="parts">
+    <div><dt><span class="btnlike blue">再轉一次</span></dt><dd>答完了，抽下一個人。只有最新一輪的按鈕有效</dd></div>
+    <div><dt><span class="btnlike red">這題不好</span></dt><dd>這個伺服器以後不再出這題（管理員可以在題庫恢復）</dd></div>
+    <div><dt><span class="btnlike">檢舉</span></dt><dd>題目內容有問題，寫原因私下告訴 bot 管理者</dd></div>
+  </dl>
+
+  <h2 id="reveal-footer">最下面那行</h2>
+  <p>「第 1 輪・題目 #D840」是第幾輪和題號。<b>D</b> 開頭是內建題庫的題，純數字是伺服器自己投的題。</p>
+
+  <h2 id="reveal-special">特殊情況</h2>
+  <dl class="parts">
+    <div><dt>題目裡有別人的名字</dt><dd>投稿時寫了 <code>{對象}</code>，bot 會換成另一位參加者</dd></div>
+    <div><dt>哈哈全部人都要!</dt><dd>抽到這格時，全部人回答同一題</dd></div>
+    <div><dt>題型「自己選」</dt><dd>抽到的人先選 <span class="btnlike">真心話</span> 或 <span class="btnlike">大冒險</span>，只有他能按。拖太久的話開局者可以按 <span class="btnlike">跳過</span></dd></div>
+  </dl>
+</section>
+
+<!-- ───────── 朗讀 ───────── -->
+<section data-page="voice">
+  <p class="crumb">玩遊戲</p>
+  <h1>朗讀</h1>
+  <p class="lead">bot 會進語音頻道，每一題都唸出來，適合邊開語音邊玩。</p>
+
+  <ol class="steps">
+    <li><div><b>先進語音頻道</b>你自己要在語音裡</div></li>
+    <li><div><b>按面板的 <span class="btnlike">朗讀</span></b>bot 會進到你所在的頻道</div></li>
+    <li><div><b>照常玩</b>每次揭曉都會唸「玩家，題型：題目」</div></li>
+  </ol>
+
+  <dl class="parts">
+    <div><dt>不在語音裡按</dt><dd>會跳出「有人的語音頻道」讓你選</dd></div>
+    <div><dt>自動離開</dt><dd>10 分鐘沒唸東西，bot 會自己離開</dd></div>
+    <div><dt>叫它先走</dt><dd><code>/真心話大冒險 05_朗讀</code>，動作選「離開」</dd></div>
+  </dl>
+
+  <div class="callout warn">
+    <div class="callout-title">注意</div>
+    <p>一個伺服器裡 bot 同時只能在一個語音頻道（Discord 的規定）。bot 重新啟動後不會自己回來，要再按一次朗讀。</p>
+  </div>
+</section>
+
+<!-- ───────── 抽選動畫 ───────── -->
+<section data-page="anims">
+  <p class="crumb">玩遊戲</p>
+  <h1>抽選動畫</h1>
+  <p class="lead">共 24 種，在面板的「抽選動畫」選單挑。可以勾好幾種輪流出現，或選「每次隨機」。</p>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<!-- ───────── 題庫與投稿 ───────── -->
+<section data-page="bank">
+  <p class="crumb">題目</p>
+  <h1>題庫與投稿</h1>
+  <p class="lead">輸入 <code>/真心話大冒險 06_題庫</code>。看題、投稿、管題都在這個畫面，只有你自己看得到。</p>
+
+  <figure>
+    <img src="img/shot_bank.png" alt="題庫畫面截圖：題目列表、兩個篩選選單、選一題選單，以及上一頁、下一頁、投稿真心話、投稿大冒險、看已停用的、搜尋按鈕" width="792" height="747" loading="lazy">
+  </figure>
+
+  <h2 id="bank-parts">畫面上的東西</h2>
+  <dl class="parts">
+    <div><dt>第一個選單</dt><dd>篩題型：全部／真心話／大冒險</dd></div>
+    <div><dt>第二個選單</dt><dd>篩真心話分級：全部／普通／曖昧／18+</dd></div>
+    <div><dt>選一題</dt><dd>選了之後下面會出現刪除、停用或恢復按鈕</dd></div>
+    <div><dt>上一頁／下一頁</dt><dd>一頁 10 題</dd></div>
+    <div><dt>搜尋</dt><dd>打幾個字，只列出含有這些字的題目</dd></div>
+    <div><dt>看已停用的</dt><dd>被按過「這題不好」的題，管理員可以恢復</dd></div>
+  </dl>
+
+  <h2 id="bank-submit">投稿</h2>
+  <ol class="steps">
+    <li><div><b>先選分級</b>在第二個選單選要投到哪一級（選「全部」就是普通）</div></li>
+    <li><div><b>按 <span class="btnlike blue">投稿真心話</span> 或 <span class="btnlike blue">投稿大冒險</span></b>會跳出輸入框</div></li>
+    <li><div><b>打題目送出</b>2～300 字，成功會告訴你題號</div></li>
+  </ol>
+
+  <h3>想點名別人：寫 {對象}</h3>
+  <p>投稿時寫 <code>{對象}</code>，出題時會換成另一位參加者的名字。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>你投的題目</th><th>出題時看到的</th></tr></thead>
+      <tbody>
+        <tr><td>你覺得 {對象} 會不會火鍋加芋頭？</td><td>你覺得 <b>阿明</b> 會不會火鍋加芋頭？</td></tr>
+        <tr><td>跟 {對象} 交換一樣隨身物品一輪</td><td>跟 <b>Mika</b> 交換一樣隨身物品一輪</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="bank-manage">刪除、停用、恢復</h2>
+  <p>在「選一題」選了題目，下面會出現對應的按鈕：</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>選到的題</th><th>按鈕</th><th>誰能按</th></tr></thead>
+      <tbody>
+        <tr><td>伺服器自己投的題</td><td>刪除</td><td>投稿的人、管理員</td></tr>
+        <tr><td>內建題（D 開頭）</td><td>停用</td><td>這頻道那局的參加者、管理員</td></tr>
+        <tr><td>已停用的題</td><td>恢復</td><td>管理員</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">內建題庫</div>
+    <p>bot 內建 4694 題（真心話三個分級＋大冒險），所有伺服器共用，轉的時候會跟你們自己投的題一起抽。內建題不能刪，只能停用；不想用整個內建題庫，管理員可以在 <a href="#server">伺服器設定</a> 關掉。</p>
+  </div>
+</section>
+
+<!-- ───────── 伺服器設定 ───────── -->
+<section data-page="server">
+  <p class="crumb">管理</p>
+  <h1>伺服器設定</h1>
+  <p class="lead">管理員輸入 <code>/真心話大冒險 07_設定</code>。選了馬上存，只影響這個伺服器。</p>
+
+  <figure>
+    <img src="img/shot_settings.png" alt="伺服器設定截圖：題型、分級、動畫三個選單，預設題庫與分享投稿兩個開關，最下面是管理身分組選單" width="657" height="507" loading="lazy">
+  </figure>
+
+  <dl class="parts">
+    <div><dt>題型、分級、動畫</dt><dd>每局一開始的預設值，局裡還是可以在面板上改</dd></div>
+    <div><dt>預設題庫</dt><dd>關掉後只抽你們自己投的題</dd></div>
+    <div><dt>分享投稿到公共題庫</dt><dd>打開會把你們的題送去審核，審過的會加進所有伺服器共用的題庫</dd></div>
+    <div><dt>管理身分組</dt><dd>勾選的身分組在 bot 裡等同管理員，見 <a href="#perms">權限</a></dd></div>
+  </dl>
+</section>
+
+<!-- ───────── 權限 ───────── -->
+<section data-page="perms">
+  <p class="crumb">管理</p>
+  <h1>權限</h1>
+  <p class="lead">bot 裡有三種身分：參加者、開局者、管理員。</p>
+
+  <dl class="parts">
+    <div><dt>參加者</dt><dd>名單上的人。可以轉、再轉一次、停用題目、叫 bot 朗讀</dd></div>
+    <div><dt>開局者</dt><dd>開這局的人。另外可以改面板、加人、請人退出、跳過、結束</dd></div>
+    <div><dt>管理員</dt><dd>任何一局都能管，還能刪任何題、恢復題目、改伺服器設定</dd></div>
+  </dl>
+
+  <h2 id="perms-admin">誰算管理員</h2>
+  <ul class="list">
+    <li>有 Discord「管理員」或「管理伺服器」權限的人</li>
+    <li>伺服器擁有者</li>
+    <li>有 <a href="#server">伺服器設定</a> 裡勾選的「管理身分組」的人</li>
+  </ul>
+  <div class="callout warn">
+    <div class="callout-title">注意</div>
+    <p>「管理身分組」名單本身只有真正的伺服器管理員能改，有這個身分組的人不能再把權限給別人。</p>
+  </div>
+</section>
+
+<!-- ───────── 常見問題 ───────── -->
+<section data-page="faq">
+  <p class="crumb">其他</p>
+  <h1>常見問題</h1>
+  <p class="lead">點問題展開答案。</p>
+
+  <details>
+    <summary>勾成員時找不到某些人？</summary>
+    <div><p>Discord 的選單只會列出一部分成員。在選單裡打他的名字搜尋就找得到，或請他自己按「加入」。</p></div>
+  </details>
+  <details>
+    <summary>開局時說「這個頻道已經有一局」？</summary>
+    <div><p>按那則訊息下面的「結束」，或輸入 <code>/真心話大冒險 04_結束</code>，再重新開局。只有開局者和管理員能結束。</p></div>
+  </details>
+  <details>
+    <summary>轉的時候說沒有題目可以抽？</summary>
+    <div><p>這局選的題型和分級底下沒有題目。多勾一個分級、到題庫投幾題，或請管理員在設定打開預設題庫。</p></div>
+  </details>
+  <details>
+    <summary>題目一直重複？</summary>
+    <div><p>bot 會先避開最近出過的題，但題目少的分級還是容易重複。多勾幾個分級或多投一些題會好很多。</p></div>
+  </details>
+  <details>
+    <summary>按鈕說「這一輪已經結束了」？</summary>
+    <div><p>你按到舊訊息上的按鈕了。捲到最下面，按最新那則。</p></div>
+  </details>
+  <details>
+    <summary>忘了按結束會怎樣？</summary>
+    <div><p>沒關係，6 小時沒人動的局會自動結束。bot 重新啟動也不會讓進行中的局不見。</p></div>
+  </details>
+  <details>
+    <summary>朗讀沒有聲音？</summary>
+    <div><p>bot 可能已經閒置 10 分鐘自己離開了。確認它還在語音頻道裡，不在就再按一次「朗讀」。</p></div>
+  </details>
+  <details>
+    <summary>題目內容不妥？</summary>
+    <div><p>按「這題不好」，這個伺服器以後就不會再出這題。要讓 bot 管理者知道，按「檢舉」寫原因。</p></div>
+  </details>
+</section>
+
+      <nav class="pager" id="pager" aria-label="上一頁與下一頁"></nav>
+    </article>
+  </main>
+
+  <aside class="toc" id="toc" aria-label="本頁內容"></aside>
+</div>
+
+<script>
+(function () {
+  // 頁面順序＝左邊選單的順序（上一頁／下一頁照這個走）
+  const links = Array.from(document.querySelectorAll('.side a'));
+  const order = links.map(a => a.getAttribute('href').slice(1));
+  const titles = Object.fromEntries(links.map(a => [a.getAttribute('href').slice(1), a.textContent]));
+  const pages = Object.fromEntries(Array.from(document.querySelectorAll('section[data-page]')).map(s => [s.dataset.page, s]));
+
+  // 動畫牆
+  const anims = [
+    ['wheel', '轉盤'], ['marquee', '跑馬燈'], ['elim', '淘汰賽'], ['slot', '拉霸機'], ['race', '賽跑'],
+    ['bomb', '傳炸彈'], ['pachinko', '彈珠台'], ['cards', '翻牌'], ['spotlight', '聚光燈'], ['sticks', '抽籤筒'],
+    ['claw', '夾娃娃機'], ['balloon', '吹氣球'], ['mole', '打地鼠'], ['fishing', '釣魚'], ['board', '大富翁'],
+    ['gacha', '扭蛋機'], ['scratch', '刮刮樂'], ['darts', '射飛鏢'], ['sushi', '迴轉壽司'], ['chest', '開寶箱'],
+    ['redpacket', '搶紅包'], ['soda', '搖汽水'], ['typhoon', '颱風地圖'], ['pog', '尪仔標']
+  ];
+  const gallery = document.getElementById('gallery');
+  for (const [id, name] of anims) {
+    const fig = document.createElement('figure');
+    const img = document.createElement('img');
+    img.src = 'img/' + id + '_5.gif';
+    img.alt = name + '動畫';
+    img.loading = 'lazy';
+    const cap = document.createElement('figcaption');
+    cap.textContent = name;
+    fig.append(img, cap);
+    gallery.append(fig);
+  }
+
+  const toc = document.getElementById('toc');
+  const pager = document.getElementById('pager');
+  const side = document.getElementById('side');
+  const menuBtn = document.getElementById('menu-btn');
+
+  function show(id, scroll) {
+    if (!pages[id]) id = 'start';
+    for (const [k, s] of Object.entries(pages)) s.classList.toggle('on', k === id);
+    for (const a of links) {
+      if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    }
+    // 本頁內容：這頁的 h2；點了只捲動，不改網址（網址的 # 是用來切頁的）
+    const heads = Array.from(pages[id].querySelectorAll('h2[id]'));
+    toc.replaceChildren();
+    if (heads.length) {
+      const h = document.createElement('h4');
+      h.textContent = '本頁內容';
+      const ul = document.createElement('ul');
+      for (const hd of heads) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = hd.textContent;
+        a.addEventListener('click', e => { e.preventDefault(); hd.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+        li.append(a);
+        ul.append(li);
+      }
+      toc.append(h, ul);
+    }
+    // 上一頁／下一頁
+    const i = order.indexOf(id);
+    pager.replaceChildren();
+    if (i > 0) pager.append(pagerLink(order[i - 1], '上一頁', 'prev'));
+    if (i >= 0 && i < order.length - 1) pager.append(pagerLink(order[i + 1], '下一頁', 'next'));
+    document.title = (id === 'start' ? '' : titles[id] + '｜') + '真心話大貓熊 使用說明';
+    if (scroll) window.scrollTo(0, 0);
+    side.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }
+  function pagerLink(id, label, cls) {
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.className = cls;
+    const s = document.createElement('small');
+    s.textContent = label;
+    a.append(s, document.createTextNode(titles[id]));
+    return a;
+  }
+
+  window.addEventListener('hashchange', () => show(location.hash.slice(1), true));
+  show(location.hash.slice(1), false);
+
+  menuBtn.addEventListener('click', () => {
+    const open = side.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  // 搜尋：比對每頁的文字，只留下有中的頁面；按 Enter 跳到第一個
+  const q = document.getElementById('q');
+  const noHit = document.getElementById('no-hit');
+  const texts = Object.fromEntries(Object.entries(pages).map(([k, s]) => [k, s.textContent.toLowerCase()]));
+  q.addEventListener('input', () => {
+    const term = q.value.trim().toLowerCase();
+    let hits = 0;
+    for (const a of links) {
+      const id = a.getAttribute('href').slice(1);
+      const ok = !term || texts[id].includes(term) || a.textContent.toLowerCase().includes(term);
+      a.parentElement.hidden = !ok;
+      if (ok) hits++;
+    }
+    for (const ul of side.querySelectorAll('ul')) {
+      const any = Array.from(ul.children).some(li => !li.hidden);
+      ul.hidden = !any;
+      ul.previousElementSibling.hidden = !any;
+    }
+    noHit.hidden = hits > 0;
+    if (term) { side.classList.add('open'); menuBtn.setAttribute('aria-expanded', 'true'); }
+  });
+  q.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const first = links.find(a => !a.parentElement.hidden);
+    if (first) location.hash = first.getAttribute('href');
+  });
+})();
+</script>
+
+</body>
+</html>
