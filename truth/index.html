@@ -123,6 +123,15 @@ code, kbd {
 figure { margin: 0 0 20px; }
 figure img { display: block; max-width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); background: #313338; }
 figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+/* 動畫重播：GIF 只播一次，右下角的按鈕或點圖片都能從頭再播 */
+.replay-wrap { position: relative; width: fit-content; max-width: 100%; }
+.replay-wrap img { cursor: pointer; }
+.replay {
+  position: absolute; right: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border: 0; border-radius: 999px; background: rgba(0, 0, 0, .62); color: #fff;
+  font: inherit; font-size: 13px; line-height: 1.6; cursor: pointer;
+}
+.replay:hover { background: rgba(0, 0, 0, .8); }
 
 /* 說明清單：名稱＋一句說明 */
 dl.parts { margin: 0 0 18px; display: grid; gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
@@ -142,6 +151,8 @@ td:first-child { white-space: nowrap; }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 0 0 20px; }
 .gallery figure { margin: 0; }
 .gallery img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; }
+.gallery .replay-wrap { width: auto; }
+.gallery .replay { right: 6px; bottom: 6px; padding: 2px 8px; font-size: 12px; }
 .gallery figcaption { font-size: 14px; color: var(--fg); font-weight: 500; text-align: center; }
 
 /* 常見問題 */
@@ -577,6 +588,44 @@ section[data-page].on { display: block; }
     fig.append(img, cap);
     gallery.append(fig);
   }
+
+  // 重播：bot 的 GIF 沒設循環，播完就停在最後一格。換成同一份檔案的新 blob 網址，瀏覽器就會從頭播；
+  // 第一次重播用 fetch 拿（通常直接命中快取），之後都用同一份，不會重複下載
+  function addReplay(img) {
+    const src = img.getAttribute('src');
+    const wrap = document.createElement('div');
+    wrap.className = 'replay-wrap';
+    img.replaceWith(wrap);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'replay';
+    btn.textContent = '↻ 重播';
+    btn.setAttribute('aria-label', '重播' + img.alt.split('：')[0]);
+    wrap.append(img, btn);
+    let blob = null, busy = false, current = '';
+    async function replay() {
+      if (busy) return;
+      busy = true;
+      try {
+        if (!blob) {
+          const r = await fetch(src);
+          if (!r.ok) throw new Error(r.status);
+          blob = await r.blob();
+        }
+        const old = current;
+        current = URL.createObjectURL(blob);
+        img.src = current;
+        if (old) URL.revokeObjectURL(old);
+      } catch (e) {
+        img.src = src + '?r=' + Date.now();   // 拿不到檔案內容（例如直接開本機檔案）就換網址重抓
+      } finally {
+        busy = false;
+      }
+    }
+    btn.addEventListener('click', replay);
+    img.addEventListener('click', replay);
+  }
+  document.querySelectorAll('article img[src$=".gif"]').forEach(addReplay);
 
   const toc = document.getElementById('toc');
   const pager = document.getElementById('pager');
