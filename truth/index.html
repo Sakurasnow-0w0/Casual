@@ -85,6 +85,26 @@ a:hover { text-decoration: underline; }
 .side a:hover { background: var(--sunken); text-decoration: none; }
 .side a[aria-current="page"] { background: var(--tip-bg); color: var(--accent); font-weight: 700; }
 .side .empty { color: var(--muted); font-size: 13px; padding: 6px 10px; }
+/* 搜尋時每個頁面底下列出中的那幾句 */
+.side .hit { display: block; padding: 2px 10px 6px 20px; font-size: 12.5px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.side .hit mark { background: var(--brand); color: var(--brand-ink); border-radius: 3px; padding: 0 2px; }
+
+/* 可以點一下複製的指令 */
+code.copy { cursor: pointer; position: relative; padding-right: 24px; }
+code.copy::after {
+  content: ""; position: absolute; right: 6px; top: 50%; width: 11px; height: 12px; transform: translateY(-50%);
+  border: 1.5px solid var(--muted); border-radius: 2px; box-shadow: -3px -3px 0 -1.5px var(--sunken), -3px -3px 0 0 var(--muted);
+}
+code.copy:hover { border-color: var(--accent); }
+code.copy.done { border-color: #248046; }
+code.copy.done::after { content: "✓"; border: 0; box-shadow: none; width: auto; height: auto; color: #248046; font-size: 12px; line-height: 1; right: 5px; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 20;
+  background: var(--fg); color: var(--bg); padding: 8px 16px; border-radius: 999px; font-size: 14px;
+  opacity: 0; pointer-events: none; transition: opacity .15s;
+}
+.toast.on { opacity: 1; }
+.tag { display: inline-block; vertical-align: middle; font-family: var(--font-body); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; padding: 1px 9px; border-radius: 999px; background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--fg); }
 
 main { min-width: 0; padding-block: 32px 64px; }
 article { max-width: 720px; }
@@ -242,6 +262,10 @@ section[data-page].on { display: block; }
       <li><a href="#server">伺服器設定</a></li>
       <li><a href="#perms">權限</a></li>
     </ul>
+    <h4>AI（實驗性）</h4>
+    <ul>
+      <li><a href="#ai">AI 聊天</a></li>
+    </ul>
     <h4>其他</h4>
     <ul>
       <li><a href="#faq">常見問題</a></li>
@@ -281,6 +305,8 @@ section[data-page].on { display: block; }
     <li>面板上每個選單、按鈕是什麼 → <a href="#panel">遊戲面板</a></li>
     <li>想自己出題 → <a href="#bank">題庫與投稿</a></li>
     <li>管理員要調整伺服器預設值 → <a href="#server">伺服器設定</a></li>
+    <li>想直接問 bot 怎麼用 → <a href="#ai">AI 聊天</a>（實驗性，部分伺服器）</li>
+    <li>在 Discord 裡看精簡版 → 輸入 <code>/真心話大冒險 08_說明</code></li>
   </ul>
 </section>
 
@@ -300,14 +326,27 @@ section[data-page].on { display: block; }
         <tr><td><code>05_朗讀</code></td><td>叫 bot 進語音唸題目，或請它離開</td><td>參加者、開局者、管理員</td></tr>
         <tr><td><code>06_題庫</code></td><td>看題、投稿、搜尋、刪題</td><td>所有人</td></tr>
         <tr><td><code>07_設定</code></td><td>伺服器預設值與管理身分組</td><td>管理員</td></tr>
-        <tr><td><code>08_說明</code></td><td>遊玩方式和這份說明的連結</td><td>所有人</td></tr>
+        <tr><td><code>08_說明</code></td><td>在 Discord 裡看精簡版說明，可以換頁，下面有能直接按的按鈕</td><td>所有人</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout">
     <div class="callout-title">提示</div>
-    <p>大部分事情直接按面板上的按鈕就好，不用記指令。</p>
+    <p>大部分事情直接按面板上的按鈕就好，不用記指令。指令點一下就能複製，貼到 Discord 的輸入框就行。</p>
   </div>
+
+  <h2 id="commands-other">其他指令</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>做什麼</th><th>誰能用</th></tr></thead>
+      <tbody>
+        <tr><td><code>/ai表情 新增</code></td><td>把伺服器的自訂表情收給 AI 聊天用，並選它什麼心情時用</td><td>管理員</td></tr>
+        <tr><td><code>/ai表情 清單</code></td><td>看 bot 現在有哪些表情，也可以刪除</td><td>管理員</td></tr>
+        <tr><td><code>.skip</code></td><td>直接在頻道打這幾個字（不是斜線指令）：bot 正在語音裡唸的那段馬上停</td><td>跟 bot 在同一個語音頻道的人</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><code>/ai表情</code> 只出現在有開放 <a href="#ai">AI 聊天</a> 的伺服器。</p>
 </section>
 
 <!-- ───────── 遊戲面板 ───────── -->
@@ -487,6 +526,13 @@ section[data-page].on { display: block; }
     <div><dt>分享投稿到公共題庫</dt><dd>打開會把你們的題送去審核，審過的會加進所有伺服器共用的題庫</dd></div>
     <div><dt>管理身分組</dt><dd>勾選的身分組在 bot 裡等同管理員，見 <a href="#perms">權限</a></dd></div>
   </dl>
+
+  <h2 id="server-ai">有開放 AI 聊天的伺服器</h2>
+  <p>設定頁會多兩顆按鈕（截圖是沒開放的樣子）：</p>
+  <dl class="parts">
+    <div><dt>AI 聊天：開／關</dt><dd>這個伺服器要不要讓 bot 回應 @ 它的訊息，見 <a href="#ai">AI 聊天</a></dd></div>
+    <div><dt>AI 筆記</dt><dd>看 bot 記了這個伺服器哪些事，可以一條一條刪，或全部清空</dd></div>
+  </dl>
 </section>
 
 <!-- ───────── 權限 ───────── -->
@@ -511,6 +557,66 @@ section[data-page].on { display: block; }
     <div class="callout-title">注意</div>
     <p>「管理身分組」名單本身只有真正的伺服器管理員能改，有這個身分組的人不能再把權限給別人。</p>
   </div>
+</section>
+
+<!-- ───────── AI 聊天 ───────── -->
+<section data-page="ai">
+  <p class="crumb">AI（實驗性）</p>
+  <h1>AI 聊天 <span class="tag">實驗性功能</span></h1>
+  <p class="lead">在訊息裡 @ bot，它會用自己的個性回你；問它這個 bot 怎麼用，它會教你。</p>
+
+  <div class="callout warn">
+    <div class="callout-title">僅對部分伺服器開放</div>
+    <p>這是實驗性功能，目前只開放給少數伺服器，內容和用法隨時可能調整。想試用的伺服器可以向 bot 管理者申請。沒開放的伺服器 @ bot 不會有反應，其他功能不受影響。</p>
+  </div>
+
+  <h2 id="ai-use">怎麼用</h2>
+  <ol class="steps">
+    <li><div><b>管理員先打開</b>在 <code>/真心話大冒險 07_設定</code> 按「AI 聊天：關」把它切成開</div></li>
+    <li><div><b>@ bot 說話</b>在訊息裡標記 bot，它會回覆那則訊息</div></li>
+  </ol>
+  <dl class="parts">
+    <div><dt>閒聊</dt><dd>它記得剛剛聊過什麼，也看得到頻道最近的對話</dd></div>
+    <div><dt>找影片</dt><dd>請它找 YouTube 影片，它會貼連結</dd></div>
+    <div><dt>在語音裡</dt><dd>bot 在語音頻道、你也在同一個頻道時，回覆會順便唸出來。唸到一半想停，打 <code>.skip</code></dd></div>
+    <div><dt>表情</dt><dd>偶爾會用管理員收給它的表情，見下面的 <a href="#ai" data-jump="ai-emoji">AI 表情</a></dd></div>
+  </dl>
+
+  <h2 id="ai-guide">問它怎麼用這個 bot</h2>
+  <p>不知道怎麼開局、怎麼投稿，直接問它，例如「怎麼玩」「我想自己加題目」。它只教你問的那件事：</p>
+  <dl class="parts">
+    <div><dt>指令</dt><dd>會用 <code>/真心話大冒險 06_題庫</code> 這種格式寫出來，在 Discord 裡點一下就能複製</dd></div>
+    <div><dt>按鈕</dt><dd>回覆下面會附上能直接按的按鈕，例如 <span class="btnlike blue">開局</span> <span class="btnlike green">加入</span> <span class="btnlike">題庫</span></dd></div>
+    <div><dt>誰能按</dt><dd>只有問話的人。別人按會看到一句提醒</dd></div>
+    <div><dt>權限照舊</dt><dd>按鈕跟你自己輸入指令是一樣的，本來不能做的事按了也不行</dd></div>
+  </dl>
+  <div class="callout">
+    <div class="callout-title">它不會替你動手</div>
+    <p>AI 只會教你、給你按鈕，要不要按由你決定。結束遊戲、刪題目、改設定這類事情，它不會給按鈕。</p>
+  </div>
+
+  <h2 id="ai-emoji">AI 表情</h2>
+  <p>管理員可以把伺服器的自訂表情收給它用：</p>
+  <dl class="parts">
+    <div><dt><code>/ai表情 新增</code></dt><dd>選一個表情，再選它什麼心情時用（開心、害羞、無言…）</dd></div>
+    <div><dt><code>/ai表情 清單</code></dt><dd>看現在有哪些，也可以刪除</dd></div>
+  </dl>
+
+  <h2 id="ai-limits">限制</h2>
+  <dl class="parts">
+    <div><dt>講太快</dt><dd>同一個人兩句話之間要隔幾秒</dd></div>
+    <div><dt>每日上限</dt><dd>每個伺服器每天有次數上限，用完要等隔天</dd></div>
+    <div><dt>有時比較慢</dt><dd>它要先判斷你是不是在問 bot 的事，問法比較模糊時會多等一兩秒</dd></div>
+    <div><dt>可能講錯</dt><dd>AI 的回答不一定正確，以這份說明和 bot 實際的畫面為準</dd></div>
+  </dl>
+
+  <h2 id="ai-data">它會記什麼</h2>
+  <ul class="list">
+    <li>你 @ 它的訊息和頻道最近的對話，會送到外部的 AI 服務產生回覆</li>
+    <li>bot 會留一份對話紀錄，並從裡面整理出對這個伺服器的印象（AI 筆記）</li>
+    <li>管理員可以在 <a href="#server">伺服器設定</a> 的「AI 筆記」查看、逐條刪除或全部清空</li>
+    <li>不想讓它看到的內容，不要在開了 AI 聊天的頻道裡 @ 它</li>
+  </ul>
 </section>
 
 <!-- ───────── 常見問題 ───────── -->
@@ -550,6 +656,18 @@ section[data-page].on { display: block; }
   <details>
     <summary>題目內容不妥？</summary>
     <div><p>按「這題不好」，這個伺服器以後就不會再出這題。要讓 bot 管理者知道，按「檢舉」寫原因。</p></div>
+  </details>
+  <details>
+    <summary>@ bot 它沒有回？</summary>
+    <div><p><a href="#ai">AI 聊天</a>是實驗性功能，只開放給部分伺服器。有開放的伺服器，還要管理員在設定把「AI 聊天」打開。都確認過還是沒回，可能是講太快或今天的次數用完了。</p></div>
+  </details>
+  <details>
+    <summary>AI 回覆下面的按鈕按了沒反應？</summary>
+    <div><p>那些按鈕只有問話的人能按。想要自己的按鈕，自己 @ bot 問一次，或直接輸入指令。</p></div>
+  </details>
+  <details>
+    <summary>說明太長不想看？</summary>
+    <div><p>在 Discord 輸入 <code>/真心話大冒險 08_說明</code>，有精簡版，用選單換頁，下面的按鈕可以直接開局、開題庫。</p></div>
   </details>
 </section>
 
@@ -685,18 +803,99 @@ section[data-page].on { display: block; }
     menuBtn.setAttribute('aria-expanded', String(open));
   });
 
-  // 搜尋：比對每頁的文字，只留下有中的頁面；按 Enter 跳到第一個
+  // 頁內跳轉（網址的 # 已經拿去切頁了，所以同一頁裡的小標用 data-jump）
+  document.querySelectorAll('a[data-jump]').forEach(a => a.addEventListener('click', e => {
+    const target = document.getElementById(a.dataset.jump);
+    if (!target || !target.closest('section.on')) return;   // 不在這一頁：照一般連結走
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+
+  // 指令點一下就複製。表格裡只寫「01_開局」的，複製出來是完整的「/真心話大冒險 01_開局」
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'status');
+  document.body.append(toast);
+  let toastTimer = 0;
+  function say(text) {
+    toast.textContent = text;
+    toast.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('on'), 1600);
+  }
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {   // 舊瀏覽器或沒有權限：退回選取＋複製
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+      return ok;
+    }
+  }
+  document.querySelectorAll('article code').forEach(code => {
+    const raw = code.textContent.trim();
+    const full = /^\d\d_/.test(raw) ? '/真心話大冒險 ' + raw : raw;
+    code.classList.add('copy');
+    code.tabIndex = 0;
+    code.setAttribute('role', 'button');
+    code.setAttribute('aria-label', '複製 ' + full);
+    code.title = '點一下複製';
+    const run = async () => {
+      const ok = await copyText(full);
+      say(ok ? '已複製 ' + full : '複製失敗，請手動選取');
+      if (!ok) return;
+      code.classList.add('done');
+      setTimeout(() => code.classList.remove('done'), 1600);
+    };
+    code.addEventListener('click', run);
+    code.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(); } });
+  });
+
+  // 搜尋：比對每頁的文字，只留下有中的頁面，並在底下列出中的那幾句；按 Enter 跳到第一個
   const q = document.getElementById('q');
   const noHit = document.getElementById('no-hit');
   const texts = Object.fromEntries(Object.entries(pages).map(([k, s]) => [k, s.textContent.toLowerCase()]));
+  const BLOCKS = 'h2, h3, p, li, dt, dd, td, summary';
+  function matches(id, term) {   // 這一頁裡含有關鍵字的最小段落
+    return Array.from(pages[id].querySelectorAll(BLOCKS))
+      .filter(el => !el.querySelector(BLOCKS) && el.textContent.toLowerCase().includes(term));
+  }
+  function snippet(el, term) {   // 關鍵字前後各留一點字，中的地方標起來（只用文字節點，不組 HTML）
+    const text = el.textContent.replace(/\s+/g, ' ').trim();
+    const at = text.toLowerCase().indexOf(term);
+    const from = Math.max(0, at - 10), to = Math.min(text.length, at + term.length + 22);
+    const span = document.createElement('span');
+    span.className = 'hit';
+    const mark = document.createElement('mark');
+    mark.textContent = text.slice(at, at + term.length);
+    span.append((from > 0 ? '…' : '') + text.slice(from, at), mark, text.slice(at + term.length, to) + (to < text.length ? '…' : ''));
+    return span;
+  }
+  function jumpToHit(id) {   // 切到那一頁之後，捲到第一個中的地方
+    const term = q.value.trim().toLowerCase();
+    if (!term || !pages[id]) return;
+    const first = matches(id, term)[0];
+    if (first) requestAnimationFrame(() => first.scrollIntoView({ block: 'center' }));
+  }
+  window.addEventListener('hashchange', () => jumpToHit(location.hash.slice(1)));
   q.addEventListener('input', () => {
     const term = q.value.trim().toLowerCase();
     let hits = 0;
+    side.querySelectorAll('.hit').forEach(el => el.remove());
     for (const a of links) {
       const id = a.getAttribute('href').slice(1);
       const ok = !term || texts[id].includes(term) || a.textContent.toLowerCase().includes(term);
       a.parentElement.hidden = !ok;
       if (ok) hits++;
+      if (ok && term) for (const el of matches(id, term).slice(0, 2)) a.parentElement.append(snippet(el, term));
     }
     for (const ul of side.querySelectorAll('ul')) {
       const any = Array.from(ul.children).some(li => !li.hidden);
@@ -709,7 +908,10 @@ section[data-page].on { display: block; }
   q.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
     const first = links.find(a => !a.parentElement.hidden);
-    if (first) location.hash = first.getAttribute('href');
+    if (!first) return;
+    const id = first.getAttribute('href').slice(1);
+    if (location.hash.slice(1) === id || (!location.hash && id === 'start')) jumpToHit(id);   // 已經在那一頁：只捲動
+    else location.hash = '#' + id;
   });
 })();
 </script>
