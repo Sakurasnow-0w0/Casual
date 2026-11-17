@@ -474,7 +474,7 @@ section[data-page].on { display: block; }
   <div class="gallery" id="gallery-bonus"></div>
   <div class="callout">
     <div class="callout-title">會放真的頭像</div>
-    <p>「拍立得」和「手機來電」會用被抽中的人的 Discord 頭像（下面的示意圖用的是假頭像）。頭像抓不到的時候，改成人形剪影。</p>
+    <p>這七種揭曉時會放被抽中的人的 Discord 頭像：選單裡的「尪仔標」「扭蛋機」「開寶箱」「翻牌」「刮刮樂」，以及隱藏的「拍立得」「手機來電」（示意圖用的是假頭像）。頭像抓不到的時候，照原本的樣子顯示。</p>
   </div>
 </section>
 
@@ -731,7 +731,7 @@ section[data-page].on { display: block; }
     for (const [id, name] of list) {
       const fig = document.createElement('figure');
       const img = document.createElement('img');
-      img.src = 'img/' + id + '_5.gif';
+      img.src = 'img/' + id + '_5.gif?v=20261118';   // 換過圖要改這個日期，不然瀏覽器會拿舊的
       img.alt = name + '動畫';
       img.loading = 'lazy';
       const cap = document.createElement('figcaption');
