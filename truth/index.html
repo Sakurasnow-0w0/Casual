@@ -474,7 +474,8 @@ section[data-page].on { display: block; }
   <div class="gallery" id="gallery-bonus"></div>
   <div class="callout">
     <div class="callout-title">會放真的頭像</div>
-    <p>這七種揭曉時會放被抽中的人的 Discord 頭像：選單裡的「尪仔標」「扭蛋機」「開寶箱」「翻牌」「刮刮樂」，以及隱藏的「拍立得」「手機來電」（示意圖用的是假頭像）。頭像抓不到的時候，照原本的樣子顯示。</p>
+    <p>大部分動畫會放參加者的 Discord 頭像：有的是每個人都有（例如賽跑、傳炸彈、夾娃娃機、搶紅包），有的只在揭曉時放被抽中的人（例如尪仔標、扭蛋機、拍立得）。示意圖用的是假頭像。</p>
+    <p>轉之前 bot 會下載這一局參加者的頭像，只放在記憶體裡、不會存檔。頭像抓不到的時候，那個人照原本的樣子顯示。</p>
   </div>
 </section>
 
@@ -731,7 +732,7 @@ section[data-page].on { display: block; }
     for (const [id, name] of list) {
       const fig = document.createElement('figure');
       const img = document.createElement('img');
-      img.src = 'img/' + id + '_5.gif?v=20261118';   // 換過圖要改這個日期，不然瀏覽器會拿舊的
+      img.src = 'img/' + id + '_5.gif?v=20261118b';   // 換過圖要改這個日期，不然瀏覽器會拿舊的
       img.alt = name + '動畫';
       img.loading = 'lazy';
       const cap = document.createElement('figcaption');
