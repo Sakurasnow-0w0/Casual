@@ -286,7 +286,7 @@ section[data-page].on { display: block; }
 <section data-page="start">
   <p class="crumb">開始</p>
   <h1>快速開始</h1>
-  <p class="lead">在 Discord 頻道裡轉輪盤抽人，被抽到的人回答真心話或做大冒險。內建 4700 多題、24 種抽選動畫，也能讓 bot 在語音裡唸題目。</p>
+  <p class="lead">在 Discord 頻道裡轉輪盤抽人，被抽到的人回答真心話或做大冒險。內建 4700 多題、38 種抽選動畫（其中 14 種是隱藏的），也能讓 bot 在語音裡唸題目。</p>
 
   <figure>
     <img src="img/wheel_5.gif" alt="轉盤動畫：五個人的名字在轉盤上，最後停在其中一人" width="400" height="460" loading="lazy">
@@ -465,8 +465,17 @@ section[data-page].on { display: block; }
 <section data-page="anims">
   <p class="crumb">玩遊戲</p>
   <h1>抽選動畫</h1>
-  <p class="lead">共 24 種，在面板的「抽選動畫」選單挑。可以勾好幾種輪流出現，或選「每次隨機」。</p>
+  <p class="lead">選單裡有 24 種，在面板的「抽選動畫」選單挑。可以勾好幾種輪流出現，或選「每次隨機」。選「每次隨機」還有機會抽到 14 種隱藏動畫。</p>
+  <h2 id="anims-menu">選單裡的 24 種</h2>
   <div class="gallery" id="gallery"></div>
+
+  <h2 id="anims-bonus">隱藏動畫：只在「每次隨機」出現</h2>
+  <p>這 14 種不在選單裡，沒辦法指定，只有選「每次隨機」時才會抽到。38 種一起抽，大約每三輪會碰到一次。</p>
+  <div class="gallery" id="gallery-bonus"></div>
+  <div class="callout">
+    <div class="callout-title">會放真的頭像</div>
+    <p>「拍立得」和「手機來電」會用被抽中的人的 Discord 頭像（下面的示意圖用的是假頭像）。頭像抓不到的時候，改成人形剪影。</p>
+  </div>
 </section>
 
 <!-- ───────── 題庫與投稿 ───────── -->
@@ -712,18 +721,27 @@ section[data-page].on { display: block; }
     ['gacha', '扭蛋機'], ['scratch', '刮刮樂'], ['darts', '射飛鏢'], ['sushi', '迴轉壽司'], ['chest', '開寶箱'],
     ['redpacket', '搶紅包'], ['soda', '搖汽水'], ['typhoon', '颱風地圖'], ['pog', '尪仔標']
   ];
-  const gallery = document.getElementById('gallery');
-  for (const [id, name] of anims) {
-    const fig = document.createElement('figure');
-    const img = document.createElement('img');
-    img.src = 'img/' + id + '_5.gif';
-    img.alt = name + '動畫';
-    img.loading = 'lazy';
-    const cap = document.createElement('figcaption');
-    cap.textContent = name;
-    fig.append(img, cap);
-    gallery.append(fig);
+  // 只在「每次隨機」出現的隱藏動畫（2026-11-18）
+  const bonusAnims = [
+    ['elevator', '電梯'], ['ferris', '摩天輪'], ['phone', '手機來電'], ['chat', '聊天室'], ['news', '新聞快報'],
+    ['receipt', '發票機'], ['typewriter', '打字機'], ['polaroid', '拍立得'], ['toaster', '烤吐司機'], ['hat', '魔術帽'],
+    ['bottle', '漂流瓶'], ['bowling', '保齡球'], ['hoop', '投籃機'], ['puzzle', '拼圖']
+  ];
+  function fillGallery(el, list) {
+    for (const [id, name] of list) {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = 'img/' + id + '_5.gif';
+      img.alt = name + '動畫';
+      img.loading = 'lazy';
+      const cap = document.createElement('figcaption');
+      cap.textContent = name;
+      fig.append(img, cap);
+      el.append(fig);
+    }
   }
+  fillGallery(document.getElementById('gallery'), anims);
+  fillGallery(document.getElementById('gallery-bonus'), bonusAnims);
 
   // 重播：bot 的 GIF 沒設循環，播完就停在最後一格。換成同一份檔案的新 blob 網址，瀏覽器就會從頭播；
   // 第一次重播用 fetch 拿（通常直接命中快取），之後都用同一份，不會重複下載
